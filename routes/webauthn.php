@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\WebAuthn\AuthenticationController;
-use App\Http\Controllers\WebAuthn\RegistrationController;
 use Illuminate\Support\Facades\Route;
+use Invoate\WebAuthn\Http\Controllers\AuthenticationController;
+use Invoate\WebAuthn\Http\Controllers\RegistrationController;
 
 Route::middleware('web')->group(function () {
     Route::controller(RegistrationController::class)->group(function () {
