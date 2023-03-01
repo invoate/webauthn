@@ -3,6 +3,7 @@
 namespace Invoate\WebAuthn\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Invoate\WebAuthn\Contracts\WebAuthnticatable;
 
 class RegistrationOptionsRequest extends FormRequest
 {
@@ -11,6 +12,10 @@ class RegistrationOptionsRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (auth()->user() instanceof WebAuthnticatable) {
+            return true;
+        }
+
         return false;
     }
 
