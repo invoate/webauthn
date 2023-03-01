@@ -3,8 +3,8 @@
 namespace Invoate\WebAuthn\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Invoate\WebAuthn\WebAuthnServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {

@@ -2,9 +2,9 @@
 
 namespace Invoate\WebAuthn;
 
+use Invoate\WebAuthn\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Invoate\WebAuthn\Commands\WebAuthnCommand;
 
 class WebAuthnServiceProvider extends PackageServiceProvider
 {
@@ -19,7 +19,8 @@ class WebAuthnServiceProvider extends PackageServiceProvider
             ->name('webauthn')
             ->hasConfigFile()
             ->hasViews()
+            ->hasRoute('webauthn')
             ->hasMigration('create_webauthn_table')
-            ->hasCommand(WebAuthnCommand::class);
+            ->hasCommand(InstallCommand::class);
     }
 }

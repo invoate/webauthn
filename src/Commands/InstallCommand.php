@@ -4,11 +4,11 @@ namespace Invoate\WebAuthn\Commands;
 
 use Illuminate\Console\Command;
 
-class WebAuthnCommand extends Command
+class InstallCommand extends Command
 {
-    public $signature = 'webauthn';
+    public $signature = 'webauthn:install';
 
-    public $description = 'My command';
+    public $description = 'Install Invoate/WebAuthn';
 
     public function handle(): int
     {
