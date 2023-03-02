@@ -13,9 +13,6 @@ class PublicKeyCredential implements PublicKeyCredentialSourceRepository
         return null;
     }
 
-    /**
-     * @return PublicKeyCredentialSource[]
-     */
     public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
     {
         return [];
@@ -23,6 +20,5 @@ class PublicKeyCredential implements PublicKeyCredentialSourceRepository
 
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
-
     }
 }

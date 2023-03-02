@@ -8,8 +8,6 @@ use Invoate\WebAuthn\Http\Requests\RegistrationOptionsRequest;
 use Invoate\WebAuthn\Http\Requests\RegistrationRequest;
 use Invoate\WebAuthn\PublicKeyCredential;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
-use Webauthn\AttestationStatement\AttestationStatement;
-use Webauthn\AttestationStatement\AttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
@@ -20,7 +18,6 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 class RegistrationController extends Controller
@@ -32,7 +29,6 @@ class RegistrationController extends Controller
 
     public function verifyRegistration(RegistrationRequest $request, PublicKeyCredentialLoader $loader)
     {
-
         $manager = AttestationStatementSupportManager::create();
         $manager->add(NoneAttestationStatementSupport::create());
 
@@ -44,7 +40,7 @@ class RegistrationController extends Controller
         $publicKeyCredential = $publicKeyCredentialLoader->loadArray($data);
 
         $authenticatorAttestationResponse = $publicKeyCredential->getResponse();
-        if (!$authenticatorAttestationResponse instanceof AuthenticatorAttestationResponse) {
+        if (! $authenticatorAttestationResponse instanceof AuthenticatorAttestationResponse) {
             //e.g. process here with a redirection to the public key creation page.
         }
 
@@ -57,31 +53,27 @@ class RegistrationController extends Controller
             extensionOutputCheckerHandler: $extensionOutputCheckerHandler
         );
 
-
         $publicKeyCredentialSource = $authenticatorAttestationResponseValidator->check(
             authenticatorAttestationResponse: $authenticatorAttestationResponse,
             publicKeyCredentialCreationOptions: $this->publicKeyCredentialCreationOptions(),
             request: 'coordina.test'
         );
-
-        dd($publicKeyCredentialSource);
-        dd($publicKeyCredential);
     }
 
     protected function publicKeyCredentialCreationOptions()
     {
         $rp = PublicKeyCredentialRpEntity::create(
-            name: "Testing",
-            id: "coordina.test"
+            name: 'Testing',
+            id: 'coordina.test'
         );
 
         $user = PublicKeyCredentialUserEntity::create(
-            name: "Username",
-            id: "123",
-            displayName: "User Name"
+            name: 'Username',
+            id: '123',
+            displayName: 'User Name'
         );
 
-        $challenge = "12345678987654321";
+        $challenge = '12345678987654321';
 
         $publicKeyCredentialParametersList = [
             PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256),
