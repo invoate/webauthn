@@ -30,21 +30,7 @@ class PublicKeyCredential implements PublicKeyCredentialSourceRepository
 
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
-        $this->webAuthnticatable()->credentials()->create([
-            'uuid' => '',
-            'name' => '',
-            'counter' => '',
-            'rp_id' => '',
-            'origin' => '',
-            'transports' => '',
-            'aaguid' => '',
-            'credential_id' => '',
-            'public_key' => '',
-            'attestation_type' => '',
-            'certificates' => '',
-            'discoverable' => '',
-            'last_used_at' => '',
-        ]);
+        //
     }
 
     protected function webAuthnticatable(): WebAuthnticatable
