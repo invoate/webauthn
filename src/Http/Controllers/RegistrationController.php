@@ -6,11 +6,6 @@ use Cose\Algorithms;
 use Illuminate\Routing\Controller;
 use Invoate\WebAuthn\Http\Requests\RegistrationOptionsRequest;
 use Invoate\WebAuthn\Http\Requests\RegistrationRequest;
-use Invoate\WebAuthn\PublicKeyCredential;
-use Webauthn\AttestationStatement\AttestationObjectLoader;
-use Webauthn\AttestationStatement\AttestationStatementSupportManager;
-use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
-use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -27,14 +22,8 @@ class RegistrationController extends Controller
         return $this->publicKeyCredentialCreationOptions();
     }
 
-    public function verifyRegistration(RegistrationRequest $request, PublicKeyCredentialLoader $loader)
+    public function verifyRegistration(RegistrationRequest $request, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator)
     {
-        $manager = AttestationStatementSupportManager::create();
-        $manager->add(NoneAttestationStatementSupport::create());
-
-        $loader = AttestationObjectLoader::create($manager);
-        $publicKeyCredentialLoader = PublicKeyCredentialLoader::create($loader);
-
         $data = $request->all();
 
         $publicKeyCredential = $publicKeyCredentialLoader->loadArray($data);
@@ -44,20 +33,16 @@ class RegistrationController extends Controller
             //e.g. process here with a redirection to the public key creation page.
         }
 
-        $publicKeyCredentialSource = new PublicKeyCredential;
-        $extensionOutputCheckerHandler = ExtensionOutputCheckerHandler::create();
-        $authenticatorAttestationResponseValidator = AuthenticatorAttestationResponseValidator::create(
-            attestationStatementSupportManager: $manager,
-            publicKeyCredentialSource: $publicKeyCredentialSource,
-            tokenBindingHandler: null,
-            extensionOutputCheckerHandler: $extensionOutputCheckerHandler
-        );
-
         $publicKeyCredentialSource = $authenticatorAttestationResponseValidator->check(
             authenticatorAttestationResponse: $authenticatorAttestationResponse,
             publicKeyCredentialCreationOptions: $this->publicKeyCredentialCreationOptions(),
             request: 'coordina.test'
         );
+
+        return [
+            'publicKeyCredentialSource' => $publicKeyCredentialSource,
+            'data' => $data,
+        ];
     }
 
     protected function publicKeyCredentialCreationOptions()
