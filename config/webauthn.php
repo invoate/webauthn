@@ -4,7 +4,7 @@
 return [
 
     'challenge' => [
-        'timeout' => 13000,
+        'timeout' => 300000,
         'bytes' => 64,
     ],
 
@@ -25,7 +25,7 @@ return [
     ],
 
     'authentication' => [
-
+        'session-key' => 'webauthn',
     ],
 
 ];
