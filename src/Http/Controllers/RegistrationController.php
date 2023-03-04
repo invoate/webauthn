@@ -4,6 +4,8 @@ namespace Invoate\WebAuthn\Http\Controllers;
 
 use Cose\Algorithms;
 use Illuminate\Routing\Controller;
+use Invoate\WebAuthn\Actions\CreateNewCredential;
+use Invoate\WebAuthn\Actions\ValidateNewCredential;
 use Invoate\WebAuthn\Http\Requests\RegistrationOptionsRequest;
 use Invoate\WebAuthn\Http\Requests\RegistrationRequest;
 use Webauthn\AuthenticatorAttestationResponse;
@@ -19,30 +21,22 @@ class RegistrationController extends Controller
 {
     public function generateOptions(RegistrationOptionsRequest $request)
     {
-        return $this->publicKeyCredentialCreationOptions();
+        $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptions();
+
+        session()->put(config('webauthn.registration.session-key', 'webauthn'), $publicKeyCredentialCreationOptions->jsonSerialize());
+
+        return $publicKeyCredentialCreationOptions;
     }
 
-    public function verifyRegistration(RegistrationRequest $request, PublicKeyCredentialLoader $publicKeyCredentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator)
+    public function verifyRegistration(RegistrationRequest $request, ValidateNewCredential $validator, CreateNewCredential $creator)
     {
         $data = $request->all();
 
-        $publicKeyCredential = $publicKeyCredentialLoader->loadArray($data);
+        $publicKeyCredentialSource = $validator($data);
 
-        $authenticatorAttestationResponse = $publicKeyCredential->getResponse();
-        if (! $authenticatorAttestationResponse instanceof AuthenticatorAttestationResponse) {
-            //e.g. process here with a redirection to the public key creation page.
-        }
+        $creator($request->user(), $data, $publicKeyCredentialSource);
 
-        $publicKeyCredentialSource = $authenticatorAttestationResponseValidator->check(
-            authenticatorAttestationResponse: $authenticatorAttestationResponse,
-            publicKeyCredentialCreationOptions: $this->publicKeyCredentialCreationOptions(),
-            request: 'coordina.test'
-        );
-
-        return [
-            'publicKeyCredentialSource' => $publicKeyCredentialSource,
-            'data' => $data,
-        ];
+        return response()->noContent();
     }
 
     protected function publicKeyCredentialCreationOptions()
@@ -58,7 +52,7 @@ class RegistrationController extends Controller
             displayName: 'User Name'
         );
 
-        $challenge = '12345678987654321';
+        $challenge = random_bytes(config('webauthn.challenge.bytes', 64));
 
         $publicKeyCredentialParametersList = [
             PublicKeyCredentialParameters::create('public-key', Algorithms::COSE_ALGORITHM_ES256),
@@ -81,7 +75,7 @@ class RegistrationController extends Controller
             challenge: $challenge,
             pubKeyCredParams: $publicKeyCredentialParametersList
         )
-            ->setTimeout(30_000)
+            ->setTimeout(config('webauthn.challenge.timeout', 13000))
             ->excludeCredentials()
             ->setAuthenticatorSelection(AuthenticatorSelectionCriteria::create())
             ->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE);

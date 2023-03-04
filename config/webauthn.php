@@ -3,6 +3,11 @@
 // config for Invoate/WebAuthn
 return [
 
+    'challenge' => [
+        'timeout' => 13000,
+        'bytes' => 64,
+    ],
+
     'registration' => [
         // can be "discouraged", "preferred" or "required"
         'resident-key' => 'preferred',
@@ -15,6 +20,8 @@ return [
 
         // allowed formats "apple", "packed", "tpm", "android-key", "android-safetynet", "fido-u2f" and "none"
         'formats' => ['apple', 'packed', 'tpm', 'android-key', 'android-safetynet', 'fido-u2f', 'none'],
+
+        'session-key' => 'webauthn',
     ],
 
     'authentication' => [
