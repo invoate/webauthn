@@ -7,7 +7,6 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSource;
 
 class ValidateNewCredential
 {
@@ -43,6 +42,6 @@ class ValidateNewCredential
     {
         $data = session()->pull(config('webauthn.registration.session-key', 'webauthn'));
 
-        return PublicKeyCredentialCreationOptions::createFromArray($data['options']);
+        return PublicKeyCredentialCreationOptions::createFromArray($data);
     }
 }

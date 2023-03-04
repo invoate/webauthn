@@ -21,10 +21,10 @@ class RegistrationController extends Controller
     {
         $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptions($request->user());
 
-        session()->put(config('webauthn.registration.session-key', 'webauthn'), [
-            'time' => time(),
-            'options' => $publicKeyCredentialCreationOptions->jsonSerialize(),
-        ]);
+        session()->put(
+            config('webauthn.registration.session-key', 'webauthn'),
+            $publicKeyCredentialCreationOptions->jsonSerialize()
+        );
 
         return $publicKeyCredentialCreationOptions;
     }
@@ -40,7 +40,7 @@ class RegistrationController extends Controller
         return response()->noContent();
     }
 
-    protected function publicKeyCredentialCreationOptions(WebAuthnticatable $user)
+    protected function publicKeyCredentialCreationOptions(WebAuthnticatable $user): PublicKeyCredentialCreationOptions
     {
         $rp = PublicKeyCredentialRpEntity::create(
             name: 'Testing',
