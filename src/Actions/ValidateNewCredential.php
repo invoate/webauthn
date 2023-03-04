@@ -3,7 +3,6 @@
 namespace Invoate\WebAuthn\Actions;
 
 use Exception;
-use Invoate\WebAuthn\Contracts\WebAuthnticatable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -28,7 +27,7 @@ class ValidateNewCredential
 
         $authenticatorAttestationResponse = $publicKeyCredential->getResponse();
         if (! $authenticatorAttestationResponse instanceof AuthenticatorAttestationResponse) {
-            throw new Exception("Invalid response");
+            throw new Exception('Invalid response');
         }
 
         $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptions();
