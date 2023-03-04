@@ -9,15 +9,14 @@ use Webauthn\PublicKeyCredentialSource;
 
 class CreateNewCredential
 {
-    public function __invoke(WebAuthnticatable $user, $data, PublicKeyCredentialSource $credential): Credential
+    public function __invoke(WebAuthnticatable $user, array $data, PublicKeyCredentialSource $credential, PublicKeyCredentialCreationOptions $publicKeyCredentialCreationOptions): Credential
     {
         return $user->credentials()->forceCreate([
             'name' => null,
-            'rp_id' => null,
-            'origin' => null,
-            'transports' => $credential->getTransports(),
-            'extension' => null,
-            'attachment' => null,
+            'rp_id' => $publicKeyCredentialCreationOptions->getRp()->getId(),
+            'transports' => $data['response']['transports'] ?? null,
+            'extension' => $data['clientExtensionResults'] ?? null,
+            'attachment' => $data['authenticatorAttachment'] ?? null,
             'aaguid' => $credential->getAaguid(),
             'credential_id' => $credential->getPublicKeyCredentialId(),
             'public_key' => $credential->getCredentialPublicKey(),

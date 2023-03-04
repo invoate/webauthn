@@ -22,7 +22,7 @@ class ValidateNewCredential
         $this->authenticatorAttestationResponseValidator = $authenticatorAttestationResponseValidator;
     }
 
-    public function __invoke($data): PublicKeyCredentialSource
+    public function __invoke($data): array
     {
         $publicKeyCredential = $this->publicKeyCredentialLoader->loadArray($data);
 
@@ -31,17 +31,19 @@ class ValidateNewCredential
             throw new Exception("Invalid response");
         }
 
-        return $this->authenticatorAttestationResponseValidator->check(
+        $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptions();
+
+        return [$publicKeyCredentialCreationOptions, $this->authenticatorAttestationResponseValidator->check(
             authenticatorAttestationResponse: $authenticatorAttestationResponse,
-            publicKeyCredentialCreationOptions: $this->publicKeyCredentialCreationOptions(),
+            publicKeyCredentialCreationOptions: $publicKeyCredentialCreationOptions,
             request: 'coordina.test'
-        );
+        )];
     }
 
     protected function publicKeyCredentialCreationOptions(): PublicKeyCredentialCreationOptions
     {
-        $data = session()->get(config('webauthn.registration.session-key', 'webauthn'));
+        $data = session()->pull(config('webauthn.registration.session-key', 'webauthn'));
 
-        return PublicKeyCredentialCreationOptions::createFromArray($data);
+        return PublicKeyCredentialCreationOptions::createFromArray($data['options']);
     }
 }
