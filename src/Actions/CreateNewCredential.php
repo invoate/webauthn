@@ -4,6 +4,7 @@ namespace Invoate\WebAuthn\Actions;
 
 use Invoate\WebAuthn\Contracts\WebAuthnticatable;
 use Invoate\WebAuthn\Models\Credential;
+use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialSource;
 
 class CreateNewCredential
