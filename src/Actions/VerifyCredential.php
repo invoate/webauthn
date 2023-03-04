@@ -25,7 +25,7 @@ class VerifyCredential
         $publicKeyCredential = $this->publicKeyCredentialLoader->loadArray($data);
 
         $authenticatorAssertionResponse = $publicKeyCredential->getResponse();
-        if (!$authenticatorAssertionResponse instanceof AuthenticatorAssertionResponse) {
+        if (! $authenticatorAssertionResponse instanceof AuthenticatorAssertionResponse) {
             throw new Exception('Invalid response');
         }
 
