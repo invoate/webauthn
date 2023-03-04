@@ -6,6 +6,7 @@ use Cose\Algorithms;
 use Illuminate\Routing\Controller;
 use Invoate\WebAuthn\Actions\CreateNewCredential;
 use Invoate\WebAuthn\Actions\ValidateNewCredential;
+use Invoate\WebAuthn\Contracts\WebAuthnticatable;
 use Invoate\WebAuthn\Http\Requests\RegistrationOptionsRequest;
 use Invoate\WebAuthn\Http\Requests\RegistrationRequest;
 use Webauthn\AuthenticatorSelectionCriteria;
@@ -18,7 +19,7 @@ class RegistrationController extends Controller
 {
     public function generateOptions(RegistrationOptionsRequest $request)
     {
-        $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptions();
+        $publicKeyCredentialCreationOptions = $this->publicKeyCredentialCreationOptions($request->user());
 
         session()->put(config('webauthn.registration.session-key', 'webauthn'), [
             'time' => time(),
@@ -39,7 +40,7 @@ class RegistrationController extends Controller
         return response()->noContent();
     }
 
-    protected function publicKeyCredentialCreationOptions()
+    protected function publicKeyCredentialCreationOptions(WebAuthnticatable $user)
     {
         $rp = PublicKeyCredentialRpEntity::create(
             name: 'Testing',
@@ -47,9 +48,9 @@ class RegistrationController extends Controller
         );
 
         $user = PublicKeyCredentialUserEntity::create(
-            name: 'Username',
-            id: '123',
-            displayName: 'User Name'
+            name: $user->name,
+            id: $user->id,
+            displayName: $user->name
         );
 
         $challenge = random_bytes(config('webauthn.challenge.bytes', 64));
