@@ -3,12 +3,16 @@
 namespace Invoate\WebAuthn\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Arr;
+use Invoate\WebAuthn\Actions\VerifyCredential;
 use Invoate\WebAuthn\Contracts\WebAuthnticatable;
 use Invoate\WebAuthn\Http\Requests\AuthenticationOptionsRequest;
 use Invoate\WebAuthn\Http\Requests\AuthenticationRequest;
 use Invoate\WebAuthn\Models\Credential;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\Util\Base64;
 
 class AuthenticationController extends Controller
 {
@@ -24,8 +28,19 @@ class AuthenticationController extends Controller
         return $publicKeyCredentialRequestOptions;
     }
 
-    public function verifyAuthentication(AuthenticationRequest $request)
+    public function verifyAuthentication(AuthenticationRequest $request, VerifyCredential $validator)
     {
+        $data = $request->all();
+
+        if (($authenticatorData = Arr::get($data, 'response.authenticatorData')) !== null) {
+            Arr::set($data, 'response.authenticatorData', Base64UrlSafe::encodeUnpadded(Base64::decode($authenticatorData)));
+        }
+
+        // ray($data);
+
+        $validator($data);
+
+        return response()->json(['verified' => true]);
     }
 
     protected function publicKeyCredentialRequestOptions(WebAuthnticatable $user): PublicKeyCredentialRequestOptions

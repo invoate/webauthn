@@ -2,6 +2,7 @@
 
 namespace Invoate\WebAuthn;
 
+use Cose\Algorithm\Manager;
 use Illuminate\Contracts\Foundation\Application;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -14,6 +15,7 @@ use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
 
@@ -57,6 +59,15 @@ class WebAuthnServiceProvider extends PackageServiceProvider
                 $app[PublicKeyCredential::class],
                 null,
                 $app[ExtensionOutputCheckerHandler::class]
+            );
+        });
+
+        $this->app->bind(AuthenticatorAssertionResponseValidator::class, function (Application $app) {
+            return new AuthenticatorAssertionResponseValidator(
+                $app[PublicKeyCredential::class],
+                null,
+                $app[ExtensionOutputCheckerHandler::class],
+                $app[Manager::class]
             );
         });
     }
