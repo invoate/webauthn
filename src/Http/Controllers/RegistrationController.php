@@ -37,7 +37,7 @@ class RegistrationController extends Controller
 
         $creator($request->user(), $data, $publicKeyCredentialSource, $publicKeyCredentialCreationOptions);
 
-        return response()->noContent();
+        return response()->json(['verified' => true]);
     }
 
     protected function publicKeyCredentialCreationOptions(WebAuthnticatable $user): PublicKeyCredentialCreationOptions
